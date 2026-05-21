@@ -162,9 +162,19 @@ const [visibleCount, setVisibleCount] = useState(5000);
 
   if (!msg?.text) return false;
 
-  return msg.text
-    .toLowerCase()
-    .includes(search.toLowerCase());
+  return (
+
+    msg.text
+      .toLowerCase()
+      .includes(search.toLowerCase())
+
+    ||
+
+    msg.sender
+      .toLowerCase()
+      .includes(search.toLowerCase())
+
+  );
 
 });
 
@@ -599,7 +609,72 @@ const visibleMessages =
 
 }
 
-function ImageMessage function VideoMessage({
+function ImageMessage({
+  attachmentName,
+  mediaFiles,
+  setFullscreenImage,
+}: any) {
+
+  const [imageUrl, setImageUrl] =
+    useState("");
+
+  useEffect(() => {
+
+    const loadImage = async () => {
+
+      const file =
+        mediaFiles[attachmentName];
+
+      if (!file) return;
+
+      const blob =
+        await file.async("blob");
+
+      const url =
+        URL.createObjectURL(blob);
+
+      setImageUrl(url);
+
+    };
+
+    loadImage();
+
+  }, [attachmentName, mediaFiles]);
+
+  return (
+
+    <div>
+
+      {imageUrl ? (
+
+        <img
+          src={imageUrl}
+          alt="attachment"
+          onClick={() =>
+            setFullscreenImage(imageUrl)
+          }
+          className="rounded-xl max-w-[250px] cursor-pointer hover:opacity-90 transition"
+        />
+
+      ) : (
+
+        <div className="bg-black/20 rounded-xl p-6 text-white">
+          Loading image...
+        </div>
+
+      )}
+
+      <div className="text-xs opacity-70 mt-2">
+        {attachmentName}
+      </div>
+
+    </div>
+
+  );
+
+}
+
+function VideoMessage({
   attachmentName,
   mediaFiles,
 }: any) {
@@ -668,71 +743,6 @@ function ImageMessage function VideoMessage({
 
       <div className="text-xs opacity-70">
         {attachmentName || "Video"}
-      </div>
-
-    </div>
-
-  );
-
-}
-({
-  attachmentName,
-  mediaFiles,
-  setFullscreenImage,
-}: any) {
-
-  const [imageUrl, setImageUrl] =
-    useState("");
-
-  useEffect(() => {
-
-    const loadImage = async () => {
-
-      const file =
-  mediaFiles[attachmentName]; 
-      if (!file) return;
-
-      const blob =
-        await file.async("blob");
-
-      const url =
-        URL.createObjectURL(blob);
-
-      setImageUrl(url);
-
-    };
-
-    loadImage();
-
-  }, [attachmentName, mediaFiles]);
-
-  return (
-
-    
-
-    <div>
-
-      {imageUrl ? (
-
-        <img
-          src={imageUrl}
-          alt="attachment"
-          onClick={() =>
-            setFullscreenImage(imageUrl)
-          }
-          className="rounded-xl max-w-[250px] cursor-pointer hover:opacity-90 transition"
-        />
-
-      ) : (
-
-        <div className="bg-black/20 rounded-xl p-6 text-white">
-          Loading image...
-        </div>
-
-      )}
-
-      <div className="text-xs opacity-70 mt-2">
-        {attachmentName}
       </div>
 
     </div>
