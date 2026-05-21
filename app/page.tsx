@@ -15,18 +15,16 @@ import {
 export default function Home() {
 
   const [messages, setMessages] = useState<any[]>([]);
-  const [search, setSearch] = useState("");
-  const [mediaFiles, setMediaFiles] = useState<any>({});
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [loadingText, setLoadingText] = useState("");
-  const [showMediaPanel, setShowMediaPanel] =
-    useState(false);
+const [search, setSearch] = useState("");
+const [mediaFiles, setMediaFiles] = useState<any>({});
+const [loading, setLoading] = useState(false);
+const [progress, setProgress] = useState(0);
+const [loadingText, setLoadingText] = useState("");
+const [showMediaPanel, setShowMediaPanel] = useState(false);
 
-  const [fullscreenImage, setFullscreenImage] =
-    useState("");
-    const [fullscreenImage, setFullscreenImage] =
-  useState("");
+const [fullscreenImage, setFullscreenImage] = useState("");
+
+const [visibleCount, setVisibleCount] = useState(5000);
 
   // ZIP Upload
   const handleZipUpload = async (
@@ -285,7 +283,7 @@ const visibleMessages =
             </h2>
 
             <p className="text-xs text-gray-400">
-              {visibleMessages.length} / {visibleMessages.length} / {filteredMessages.length} messages
+              {visibleMessages.length} / {filteredMessages.length} messages
             </p>
 
           </div>
@@ -595,27 +593,7 @@ const visibleMessages =
 
 )}
 
-{/* LOAD MORE */}
-{visibleCount < filteredMessages.length && (
 
-  <div className="p-4 flex justify-center">
-
-    <button
-      onClick={() =>
-        setVisibleCount(
-          prev => prev + 5000
-        )
-      }
-      className="bg-[#00a884] hover:bg-[#01926f] transition text-white px-6 py-3 rounded-xl font-medium"
-    >
-
-      Load More Messages
-
-    </button>
-
-  </div>
-
-)}
         {/* BOTTOM BAR */}
         <div className="bg-[#202c33] p-2 md:p-4 flex items-center gap-2 md:gap-4 border-t border-[#2f3b43]">
 
