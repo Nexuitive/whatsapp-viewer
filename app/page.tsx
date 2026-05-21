@@ -20,7 +20,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [loadingText, setLoadingText] = useState("");
-
+const [showMediaPanel, setShowMediaPanel] =
+  useState(false);
   // ZIP Upload
   const handleZipUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -139,7 +140,7 @@ for (let i = 0; i < lines.length; i++) {
       }
 setProgress(95);
 setLoadingText("Rendering chat...");
-      setMessages(parsedMessages.slice(-5000));
+      setMessages(parsedMessages.slice(0, 5000));
 
       setMediaFiles(mediaUrls);
 setProgress(100);
@@ -165,6 +166,20 @@ setTimeout(() => {
   };
 
   // SEARCH
+  const imageMessages =
+  messages.filter((msg: any) =>
+    msg.text.match(/\.(jpg|jpeg|png|gif)$/i)
+  );
+
+const videoMessages =
+  messages.filter((msg: any) =>
+    msg.text.match(/\.(mp4)$/i)
+  );
+
+const audioMessages =
+  messages.filter((msg: any) =>
+    msg.text.match(/\.(opus|mp3|wav)$/i)
+  );
   const filteredMessages = messages.filter((msg: any) => {
 
     if (!msg?.text) return false;
@@ -247,14 +262,35 @@ setTimeout(() => {
         </div>
 
       </div>
+{/* MOBILE UPLOAD */}
+<div className="md:hidden p-3 bg-[#202c33] border-b border-[#2f3b43]">
 
+  <label className="bg-[#00a884] text-white p-3 rounded-xl cursor-pointer block text-center font-medium">
+
+    Upload WhatsApp ZIP
+
+    <input
+      type="file"
+      accept=".zip"
+      className="hidden"
+      onChange={handleZipUpload}
+    />
+
+  </label>
+
+</div>
       {/* CHAT AREA */}
       <div className="w-full md:flex-1 flex flex-col bg-[#0b141a]">
 
         {/* TOP */}
         <div className="bg-[#202c33] p-4 flex items-center justify-between border-b border-[#2f3b43]">
 
-          <div>
+          <div
+  className="cursor-pointer"
+  onClick={() =>
+    setShowMediaPanel(true)
+  }
+>
 
             <h2 className="text-white font-medium">
               Chat Viewer
@@ -315,7 +351,166 @@ setTimeout(() => {
   </div>
 
 )}
+{/* MEDIA PANEL */}
+{showMediaPanel && (
 
+  <div className="absolute inset-0 z-50 bg-[#111b21] overflow-y-auto">
+
+    {/* TOP */}
+    <div className="bg-[#202c33] p-4 flex items-center justify-between sticky top-0">
+
+      <h2 className="text-white text-xl font-semibold">
+        Media Library
+      </h2>
+
+      <button
+        onClick={() =>
+          setShowMediaPanel(false)
+        }
+        className="text-white text-2xl"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <div className="p-4 space-y-8">
+
+      {/* IMAGES */}
+      <div>
+
+        <h3 className="text-green-400 text-lg mb-4">
+          Images ({imageMessages.length})
+        </h3>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+          {imageMessages.slice(0, 100).map(
+            (msg: any, index: number) => {
+
+              const attachment =
+                msg.text
+                  .replace("<attached:", "")
+                  .replace(">", "")
+                  .trim();
+
+              return (
+
+                <button
+                  key={index}
+                  onClick={async () => {
+
+                    const file =
+                      mediaFiles[attachment];
+
+                    if (!file) return;
+
+                    const blob =
+                      await file.async("blob");
+
+                    const url =
+                      URL.createObjectURL(blob);
+
+                    window.open(url);
+
+                  }}
+                  className="bg-[#202c33] rounded-xl p-4 text-left text-white hover:bg-[#2a3942]"
+                >
+
+                  🖼 {attachment}
+
+                </button>
+
+              );
+
+            }
+          )}
+
+        </div>
+
+      </div>
+
+      {/* VIDEOS */}
+      <div>
+
+        <h3 className="text-green-400 text-lg mb-4">
+          Videos ({videoMessages.length})
+        </h3>
+
+        <div className="space-y-2">
+
+          {videoMessages.slice(0, 50).map(
+            (msg: any, index: number) => {
+
+              const attachment =
+                msg.text
+                  .replace("<attached:", "")
+                  .replace(">", "")
+                  .trim();
+
+              return (
+
+                <div
+                  key={index}
+                  className="bg-[#202c33] p-4 rounded-xl text-white"
+                >
+
+                  🎥 {attachment}
+
+                </div>
+
+              );
+
+            }
+          )}
+
+        </div>
+
+      </div>
+
+      {/* AUDIOS */}
+      <div>
+
+        <h3 className="text-green-400 text-lg mb-4">
+          Voice Messages ({audioMessages.length})
+        </h3>
+
+        <div className="space-y-2">
+
+          {audioMessages.slice(0, 50).map(
+            (msg: any, index: number) => {
+
+              const attachment =
+                msg.text
+                  .replace("<attached:", "")
+                  .replace(">", "")
+                  .trim();
+
+              return (
+
+                <div
+                  key={index}
+                  className="bg-[#202c33] p-4 rounded-xl text-white"
+                >
+
+                  🎤 {attachment}
+
+                </div>
+
+              );
+
+            }
+          )}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
         {/* MESSAGES */}
         <div
           className="flex-1 overflow-y-auto p-6 space-y-3"
@@ -368,33 +563,116 @@ setTimeout(() => {
 
                     <div className="space-y-2">
 
-                      <button
-  onClick={async () => {
+                      {attachmentName.match(/\.(jpg|jpeg|png|gif)$/i) ? (
 
-    const file =
-      mediaFiles[attachmentName];
+  <button
+    onClick={async () => {
 
-    if (!file) return;
+      const file =
+        mediaFiles[attachmentName];
 
-    const blob =
-      await file.async("blob");
+      if (!file) return;
 
-    const url =
-      URL.createObjectURL(blob);
+      const blob =
+        await file.async("blob");
 
-    window.open(url);
+      const url =
+        URL.createObjectURL(blob);
 
-  }}
-  className="bg-black/20 rounded-xl p-4 text-left w-full hover:bg-black/30 transition"
->
+      window.open(url);
 
-  🖼 Open Image
+    }}
+    className="bg-black/20 rounded-xl p-4 text-left w-full"
+  >
 
-  <div className="text-xs opacity-70 mt-2">
-    {attachmentName}
+    🖼 Open Image
+
+    <div className="text-xs opacity-70 mt-2">
+      {attachmentName}
+    </div>
+
+  </button>
+
+) :
+
+attachmentName.match(/\.(opus|mp3|wav)$/i) ? (
+
+  <button
+    onClick={async () => {
+
+      const file =
+        mediaFiles[attachmentName];
+
+      if (!file) return;
+
+      const blob =
+        await file.async("blob");
+
+      const url =
+        URL.createObjectURL(blob);
+
+      const audio =
+        new Audio(url);
+
+      audio.play();
+
+    }}
+    className="bg-black/20 rounded-xl p-4 text-left w-full"
+  >
+
+    🎤 Play Voice Message
+
+    <div className="text-xs opacity-70 mt-2">
+      {attachmentName}
+    </div>
+
+  </button>
+
+) :
+
+attachmentName.match(/\.(mp4)$/i) ? (
+
+  <button
+    onClick={async () => {
+
+      const file =
+        mediaFiles[attachmentName];
+
+      if (!file) return;
+
+      const blob =
+        await file.async("blob");
+
+      const url =
+        URL.createObjectURL(blob);
+
+      window.open(url);
+
+    }}
+    className="bg-black/20 rounded-xl p-4 text-left w-full"
+  >
+
+    🎥 Open Video
+
+    <div className="text-xs opacity-70 mt-2">
+      {attachmentName}
+    </div>
+
+  </button>
+
+) : (
+
+  <div className="bg-black/20 rounded-xl p-4">
+
+    📎 Attachment
+
+    <div className="text-xs opacity-70 mt-2">
+      {attachmentName}
+    </div>
+
   </div>
 
-</button>
+)}
 
                       <div className="text-xs opacity-70">
                         {attachmentName}
