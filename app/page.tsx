@@ -17,6 +17,9 @@ export default function Home() {
   const [messages, setMessages] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [mediaFiles, setMediaFiles] = useState<any>({});
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [loadingText, setLoadingText] = useState("");
 
   // ZIP Upload
   const handleZipUpload = async (
@@ -29,7 +32,14 @@ export default function Home() {
 
       if (!file) return;
 
+      setLoading(true);
+setProgress(5);
+setLoadingText("Reading ZIP file...");
+
       const zip = await JSZip.loadAsync(file);
+
+      setProgress(15);
+setLoadingText("Extracting files...");
 
       let chatFile: any = null;
 
@@ -75,7 +85,8 @@ export default function Home() {
         }
 
       });
-
+setProgress(45);
+setLoadingText("Processing media files...");
       await Promise.all(promises);
 
       if (!chatFile) {
@@ -89,7 +100,8 @@ export default function Home() {
       const text = await chatFile.async("string");
 
       const lines = text.split("\n");
-
+setProgress(70);
+setLoadingText("Parsing chat messages...");
       const parsedMessages: any[] = [];
 
       for (let line of lines) {
@@ -119,11 +131,17 @@ export default function Home() {
         }
 
       }
-
+setProgress(95);
+setLoadingText("Rendering chat...");
       setMessages(parsedMessages);
 
       setMediaFiles(mediaUrls);
+setProgress(100);
+setLoadingText("Completed!");
 
+setTimeout(() => {
+  setLoading(false);
+}, 800);
       alert("Chat Loaded Successfully 🔥");
 
     } catch (error) {
@@ -247,6 +265,46 @@ export default function Home() {
           </div>
 
         </div>
+
+        {/* LOADING OVERLAY */}
+{loading && (
+
+  <div className="absolute inset-0 bg-black/80 z-50 flex items-center justify-center">
+
+    <div className="w-[400px] bg-[#202c33] p-6 rounded-2xl">
+
+      <h2 className="text-white text-xl font-semibold mb-4">
+        Loading Chat...
+      </h2>
+
+      <div className="w-full bg-[#2a3942] rounded-full h-4 overflow-hidden">
+
+        <div
+          className="bg-[#00a884] h-full transition-all duration-500"
+          style={{
+            width: `${progress}%`,
+          }}
+        />
+
+      </div>
+
+      <div className="flex justify-between mt-3">
+
+        <p className="text-gray-300 text-sm">
+          {loadingText}
+        </p>
+
+        <p className="text-green-400 font-semibold">
+          {progress}%
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
 
         {/* MESSAGES */}
         <div
