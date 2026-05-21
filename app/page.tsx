@@ -686,18 +686,8 @@ function VideoMessage({
 
     const loadVideo = async () => {
 
-      const possibleVideoFile =
-        Object.keys(mediaFiles).find(
-          (fileName) =>
-            fileName.includes("VIDEO") ||
-            fileName.match(
-              /\.(mp4|mov|3gp|mkv)$/i
-            )
-        );
-
-      const file =
-        mediaFiles[attachmentName] ||
-        mediaFiles[possibleVideoFile || ""];
+   const file =
+  mediaFiles[attachmentName];
 
       if (!file) return;
 
