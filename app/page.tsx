@@ -92,7 +92,25 @@ setProgress(70);
 setLoadingText("Parsing chat messages...");
       const parsedMessages: any[] = [];
 
-      for (let line of lines) {
+      const totalLines = lines.length;
+
+for (let i = 0; i < lines.length; i++) {
+
+  let line = lines[i];
+
+  // REAL PROGRESS
+  if (i % 500 === 0) {
+
+    const percent =
+      Math.floor((i / totalLines) * 100);
+
+    setProgress(percent);
+
+    setLoadingText(
+      `Loading messages... ${i}/${totalLines}`
+    );
+
+  }
 
         // Remove hidden chars
         line = line.replace(/\u200e/g, "").trim();
@@ -162,7 +180,7 @@ setTimeout(() => {
     <main className="h-screen bg-[#111b21] flex overflow-hidden">
 
       {/* SIDEBAR */}
-      <div className="w-[32%] bg-[#111b21] border-r border-[#222e35] flex flex-col">
+      <div className="hidden md:flex md:w-[32%] bg-[#111b21] border-r border-[#222e35] flex flex-col">
 
         {/* HEADER */}
         <div className="p-4 bg-[#202c33] flex items-center justify-between">
@@ -231,7 +249,7 @@ setTimeout(() => {
       </div>
 
       {/* CHAT AREA */}
-      <div className="flex-1 flex flex-col bg-[#0b141a]">
+      <div className="w-full md:flex-1 flex flex-col bg-[#0b141a]">
 
         {/* TOP */}
         <div className="bg-[#202c33] p-4 flex items-center justify-between border-b border-[#2f3b43]">
@@ -263,7 +281,7 @@ setTimeout(() => {
 
   <div className="absolute inset-0 bg-black/80 z-50 flex items-center justify-center">
 
-    <div className="w-[400px] bg-[#202c33] p-6 rounded-2xl">
+    <div className="w-[90%] md:w-[400px] bg-[#202c33] p-6 rounded-2xl">
 
       <h2 className="text-white text-xl font-semibold mb-4">
         Loading Chat...
@@ -334,7 +352,7 @@ setTimeout(() => {
               >
 
                 <div
-                  className={`relative px-4 py-2 rounded-xl text-white max-w-[420px] shadow ${
+                  className={`relative px-4 py-2 rounded-xl text-white max-w-[85%] md:max-w-[420px] shadow ${
                     index % 2 === 0
                       ? "bg-[#202c33]"
                       : "bg-[#005c4b]"
