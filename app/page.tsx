@@ -139,7 +139,7 @@ for (let i = 0; i < lines.length; i++) {
       }
 setProgress(95);
 setLoadingText("Rendering chat...");
-      setMessages(parsedMessages);
+      setMessages(parsedMessages.slice(-5000));
 
       setMediaFiles(mediaUrls);
 setProgress(100);
