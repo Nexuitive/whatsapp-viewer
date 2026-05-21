@@ -21,6 +21,8 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [loadingText, setLoadingText] = useState("");
 const [showMediaPanel, setShowMediaPanel] =
+const [fullscreenImage, setFullscreenImage] =
+  useState("");
   useState(false);
   // ZIP Upload
   const handleZipUpload = async (
@@ -510,6 +512,31 @@ const audioMessages =
   </div>
 
 )}
+{/* FULLSCREEN IMAGE VIEWER */}
+{fullscreenImage && (
+
+  <div className="fixed inset-0 z-[999] bg-black/95 flex items-center justify-center">
+
+    {/* CLOSE */}
+    <button
+      onClick={() =>
+        setFullscreenImage("")
+      }
+      className="absolute top-5 right-5 text-white text-4xl z-50"
+    >
+      ✕
+    </button>
+
+    {/* IMAGE */}
+    <img
+      src={fullscreenImage}
+      alt="fullscreen"
+      className="max-w-full max-h-full object-contain p-4"
+    />
+
+  </div>
+
+)}
         {/* MESSAGES */}
         <div
           className="flex-1 overflow-y-auto p-2 md:p-6 space-y-3"
@@ -565,9 +592,10 @@ const audioMessages =
                       {attachmentName.match(/\.(jpg|jpeg|png|gif)$/i) ? (
 
   <ImageMessage
-    attachmentName={attachmentName}
-    mediaFiles={mediaFiles}
-   />
+  attachmentName={attachmentName}
+  mediaFiles={mediaFiles}
+  setFullscreenImage={setFullscreenImage}
+/>
 
     ) :
 
@@ -709,6 +737,8 @@ attachmentName.match(/\.(mp4)$/i) ? (
 function ImageMessage({
   attachmentName,
   mediaFiles,
+  setFullscreenImage,
+
 }: any) {
 
   const [imageUrl, setImageUrl] =
@@ -745,7 +775,7 @@ function ImageMessage({
           src={imageUrl}
           alt="attachment"
           onClick={() =>
-            window.open(imageUrl)
+            setFullscreenImage(imageUrl)
           }
           className="rounded-xl max-w-[250px] cursor-pointer hover:opacity-90 transition"
         />
