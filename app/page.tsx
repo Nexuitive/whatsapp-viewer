@@ -195,7 +195,7 @@ const audioMessages =
     <main className="h-screen bg-[#111b21] flex overflow-hidden">
 
       {/* SIDEBAR */}
-      <div className="hidden md:flex md:w-[32%] bg-[#111b21] border-r border-[#222e35] flex flex-col">
+      <div className="hidden md:flex md:w-[32%] lg:w-[28%] bg-[#111b21] border-r border-[#222e35] flex flex-col">
 
         {/* HEADER */}
         <div className="p-4 bg-[#202c33] flex items-center justify-between">
@@ -262,25 +262,9 @@ const audioMessages =
         </div>
 
       </div>
-{/* MOBILE UPLOAD */}
-<div className="md:hidden p-3 bg-[#202c33] border-b border-[#2f3b43]">
 
-  <label className="bg-[#00a884] text-white p-3 rounded-xl cursor-pointer block text-center font-medium">
-
-    Upload WhatsApp ZIP
-
-    <input
-      type="file"
-      accept=".zip"
-      className="hidden"
-      onChange={handleZipUpload}
-    />
-
-  </label>
-
-</div>
       {/* CHAT AREA */}
-      <div className="w-full md:flex-1 flex flex-col bg-[#0b141a]">
+      <div className="flex-1 flex flex-col w-full bg-[#0b141a]">
 
         {/* TOP */}
         <div className="bg-[#202c33] p-4 flex items-center justify-between border-b border-[#2f3b43]">
@@ -301,7 +285,22 @@ const audioMessages =
             </p>
 
           </div>
+<div className="md:hidden">
 
+  <label className="bg-[#00a884] text-white px-3 py-2 rounded-xl cursor-pointer text-sm font-medium">
+
+    Upload
+
+    <input
+      type="file"
+      accept=".zip"
+      className="hidden"
+      onChange={handleZipUpload}
+    />
+
+  </label>
+
+</div>
           <div className="flex gap-4 text-gray-300">
 
             <Search size={20} />
@@ -357,7 +356,7 @@ const audioMessages =
   <div className="absolute inset-0 z-50 bg-[#111b21] overflow-y-auto">
 
     {/* TOP */}
-    <div className="bg-[#202c33] p-4 flex items-center justify-between sticky top-0">
+    <div className="bg-[#202c33] p-3 md:p-4 flex items-center justify-between sticky top-0">
 
       <h2 className="text-white text-xl font-semibold">
         Media Library
@@ -513,7 +512,7 @@ const audioMessages =
 )}
         {/* MESSAGES */}
         <div
-          className="flex-1 overflow-y-auto p-6 space-y-3"
+          className="flex-1 overflow-y-auto p-2 md:p-6 space-y-3"
           style={{
             backgroundColor: "#0b141a",
           }}
@@ -547,7 +546,7 @@ const audioMessages =
               >
 
                 <div
-                  className={`relative px-4 py-2 rounded-xl text-white max-w-[85%] md:max-w-[420px] shadow ${
+                  className={`relative px-4 py-2 rounded-xl text-white max-w-[92%] md:max-w-[420px] shadow ${
                     index % 2 === 0
                       ? "bg-[#202c33]"
                       : "bg-[#005c4b]"
@@ -565,35 +564,12 @@ const audioMessages =
 
                       {attachmentName.match(/\.(jpg|jpeg|png|gif)$/i) ? (
 
-  <button
-    onClick={async () => {
+  <ImageMessage
+    attachmentName={attachmentName}
+    mediaFiles={mediaFiles}
+   />
 
-      const file =
-        mediaFiles[attachmentName];
-
-      if (!file) return;
-
-      const blob =
-        await file.async("blob");
-
-      const url =
-        URL.createObjectURL(blob);
-
-      window.open(url);
-
-    }}
-    className="bg-black/20 rounded-xl p-4 text-left w-full"
-  >
-
-    🖼 Open Image
-
-    <div className="text-xs opacity-70 mt-2">
-      {attachmentName}
-    </div>
-
-  </button>
-
-) :
+    ) :
 
 attachmentName.match(/\.(opus|mp3|wav)$/i) ? (
 
@@ -706,7 +682,7 @@ attachmentName.match(/\.(mp4)$/i) ? (
         </div>
 
         {/* BOTTOM */}
-        <div className="bg-[#202c33] p-4 flex items-center gap-4 border-t border-[#2f3b43]">
+        <div className="bg-[#202c33] p-2 md:p-4 flex items-center gap-2 md:gap-4 border-t border-[#2f3b43]">
 
           <div className="flex gap-3 text-gray-300">
 
@@ -729,4 +705,65 @@ attachmentName.match(/\.(mp4)$/i) ? (
     </main>
 
   );
+}
+function ImageMessage({
+  attachmentName,
+  mediaFiles,
+}: any) {
+
+  const [imageUrl, setImageUrl] =
+    useState("");
+
+  const loadImage = async () => {
+
+    const file =
+      mediaFiles[attachmentName];
+
+    if (!file) return;
+
+    const blob =
+      await file.async("blob");
+
+    const url =
+      URL.createObjectURL(blob);
+
+    setImageUrl(url);
+
+  };
+
+  useState(() => {
+    loadImage();
+  });
+
+  return (
+
+    <div>
+
+      {imageUrl ? (
+
+        <img
+          src={imageUrl}
+          alt="attachment"
+          onClick={() =>
+            window.open(imageUrl)
+          }
+          className="rounded-xl max-w-[250px] cursor-pointer hover:opacity-90 transition"
+        />
+
+      ) : (
+
+        <div className="bg-black/20 rounded-xl p-6 text-white">
+          Loading image...
+        </div>
+
+      )}
+
+      <div className="text-xs opacity-70 mt-2">
+        {attachmentName}
+      </div>
+
+    </div>
+
+  );
+
 }
