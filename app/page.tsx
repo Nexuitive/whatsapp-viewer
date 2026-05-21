@@ -272,9 +272,12 @@ const visibleMessages =
         <div className="bg-[#202c33] p-3 md:p-4 flex items-center justify-between border-b border-[#2f3b43]">
 
           <div
-            className="cursor-pointer"
+            className="cursor-pointer select-none"
+            
             onClick={() =>
               setShowMediaPanel(true)
+              
+              
             }
           >
 
@@ -420,8 +423,8 @@ const visibleMessages =
                 .trim();
 
             const isVideo =
-              message.text.includes("video omitted") ||
-              attachmentName.match(/\.(mp4)$/i);
+  message.text.includes("video omitted") ||
+  attachmentName.match(/\.(mp4|mov|3gp|mkv)$/i);
 
             const isImage =
               attachmentName.match(
@@ -505,34 +508,11 @@ const visibleMessages =
 
                       ) : isVideo ? (
 
-                        <button
-                          onClick={async () => {
+  <VideoMessage
+    attachmentName={attachmentName}
+    mediaFiles={mediaFiles}
+  />
 
-                            const file =
-                              mediaFiles[attachmentName];
-
-                            if (!file) return;
-
-                            const blob =
-                              await file.async("blob");
-
-                            const url =
-                              URL.createObjectURL(blob);
-
-                            window.open(url);
-
-                          }}
-                          className="bg-black/20 rounded-xl p-4 text-left w-full"
-                        >
-
-                          🎥 Open Video
-
-                          <div className="text-xs opacity-70 mt-2">
-                            {attachmentName ||
-                              "Video Attachment"}
-                          </div>
-
-                        </button>
 
                       ) : (
 
@@ -619,7 +599,83 @@ const visibleMessages =
 
 }
 
-function ImageMessage({
+function ImageMessage function VideoMessage({
+  attachmentName,
+  mediaFiles,
+}: any) {
+
+  const [videoUrl, setVideoUrl] =
+    useState("");
+
+  useEffect(() => {
+
+    const loadVideo = async () => {
+
+      const possibleVideoFile =
+        Object.keys(mediaFiles).find(
+          (fileName) =>
+            fileName.includes("VIDEO") ||
+            fileName.match(
+              /\.(mp4|mov|3gp|mkv)$/i
+            )
+        );
+
+      const file =
+        mediaFiles[attachmentName] ||
+        mediaFiles[possibleVideoFile || ""];
+
+      if (!file) return;
+
+      const blob =
+        await file.async("blob");
+
+      const url =
+        URL.createObjectURL(blob);
+
+      setVideoUrl(url);
+
+    };
+
+    loadVideo();
+
+  }, [attachmentName, mediaFiles]);
+
+  return (
+
+    <div className="space-y-2">
+
+      {videoUrl ? (
+
+        <video
+          controls
+          className="rounded-xl max-w-[280px]"
+        >
+
+          <source
+            src={videoUrl}
+            type="video/mp4"
+          />
+
+        </video>
+
+      ) : (
+
+        <div className="bg-black/20 rounded-xl p-6 text-white">
+          Loading video...
+        </div>
+
+      )}
+
+      <div className="text-xs opacity-70">
+        {attachmentName || "Video"}
+      </div>
+
+    </div>
+
+  );
+
+}
+({
   attachmentName,
   mediaFiles,
   setFullscreenImage,
@@ -633,8 +689,7 @@ function ImageMessage({
     const loadImage = async () => {
 
       const file =
-        mediaFiles[attachmentName];
-
+  mediaFiles[attachmentName]; 
       if (!file) return;
 
       const blob =
@@ -652,6 +707,8 @@ function ImageMessage({
   }, [attachmentName, mediaFiles]);
 
   return (
+
+    
 
     <div>
 
