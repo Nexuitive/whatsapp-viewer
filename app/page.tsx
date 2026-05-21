@@ -46,48 +46,36 @@ setLoadingText("Extracting files...");
       const mediaUrls: any = {};
 
       // READ ZIP FILES
-      const promises: Promise<any>[] = [];
+      // READ ZIP FILES
+zip.forEach((relativePath, zipEntry) => {
 
-      zip.forEach((relativePath, zipEntry) => {
+  // TXT FILE
+  if (relativePath.endsWith(".txt")) {
+    chatFile = zipEntry;
+  }
 
-        // TXT FILE
-        if (relativePath.endsWith(".txt")) {
-          chatFile = zipEntry;
-        }
+  // STORE MEDIA FILES
+  if (
+    relativePath.match(
+      /\.(jpg|jpeg|png|gif|mp4|mp3|opus|pdf)$/i
+    )
+  ) {
 
-        // MEDIA FILES
-        if (
-          relativePath.match(
-            /\.(jpg|jpeg|png|gif|mp4|mp3|opus|pdf)$/i
-          )
-        ) {
+    const fileName =
+      relativePath
+        .split("/")
+        .pop()
+        ?.trim();
 
-          const promise = zipEntry
-            .async("blob")
-            .then((blob) => {
+    if (fileName) {
 
-              const url = URL.createObjectURL(blob);
+      mediaUrls[fileName] = zipEntry;
 
-              const fileName =
-                relativePath
-                  .split("/")
-                  .pop()
-                  ?.trim();
+    }
 
-              if (fileName) {
-                mediaUrls[fileName] = url;
-              }
+  }
 
-            });
-
-          promises.push(promise);
-
-        }
-
-      });
-setProgress(45);
-setLoadingText("Processing media files...");
-      await Promise.all(promises);
+});
 
       if (!chatFile) {
 
@@ -330,9 +318,6 @@ setTimeout(() => {
                 .replace(">", "")
                 .trim();
 
-            const imageUrl =
-              mediaFiles[attachmentName];
-
             return (
 
               <div
@@ -357,16 +342,37 @@ setTimeout(() => {
                   </div>
 
                   {/* IMAGE */}
-                  {message.text.includes("<attached:") &&
-                  imageUrl ? (
+                  {message.text.includes("<attached:") ? (
 
                     <div className="space-y-2">
 
-                      <img
-                        src={imageUrl}
-                        alt="attachment"
-                        className="rounded-xl max-w-[250px]"
-                      />
+                      <button
+  onClick={async () => {
+
+    const file =
+      mediaFiles[attachmentName];
+
+    if (!file) return;
+
+    const blob =
+      await file.async("blob");
+
+    const url =
+      URL.createObjectURL(blob);
+
+    window.open(url);
+
+  }}
+  className="bg-black/20 rounded-xl p-4 text-left w-full hover:bg-black/30 transition"
+>
+
+  🖼 Open Image
+
+  <div className="text-xs opacity-70 mt-2">
+    {attachmentName}
+  </div>
+
+</button>
 
                       <div className="text-xs opacity-70">
                         {attachmentName}
