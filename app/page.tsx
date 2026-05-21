@@ -128,9 +128,13 @@ setProgress(100);
 setLoadingText("Completed!");
 
 setTimeout(() => {
+
   setLoading(false);
-}, 800);
-      alert("Chat Loaded Successfully 🔥");
+
+  setProgress(0);
+
+}, 500);
+      
 
     } catch (error) {
 
