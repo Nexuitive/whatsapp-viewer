@@ -158,45 +158,25 @@ const [visibleCount, setVisibleCount] = useState(5000);
   };
 
   // SEARCH FILTER
-  const filteredMessages = messages.filter((msg: any) => {
-
-  if (!msg?.text) return false;
-
-  return (
-
-    msg.text
-      .toLowerCase()
-      .includes(search.toLowerCase())
-
-    ||
-
-    msg.sender
-      .toLowerCase()
-      .includes(search.toLowerCase())
-
-  );
-
-});
-
-const visibleMessages =
-  filteredMessages.slice(0, visibleCount);
+ const visibleMessages =
+  messages.slice(0, visibleCount);
 
   // MEDIA FILTERS
   const imageMessages =
-    filteredMessages.filter((msg: any) =>
+    messages.filter((msg: any) =>
       msg.text.match(
         /\.(jpg|jpeg|png|gif)$/i
       )
     );
 
   const videoMessages =
-    filteredMessages.filter((msg: any) =>
+    messages.filter((msg: any) =>
       msg.text.includes("video omitted") ||
       msg.text.match(/\.(mp4)$/i)
     );
 
   const audioMessages =
-    filteredMessages.filter((msg: any) =>
+    messages.filter((msg: any) =>
       msg.text.match(
         /\.(opus|mp3|wav)$/i
       )
@@ -296,7 +276,7 @@ const visibleMessages =
             </h2>
 
             <p className="text-xs text-gray-400">
-              {visibleMessages.length} / {filteredMessages.length} messages
+              {visibleMessages.length} / {messages.length} messages
             </p>
 
           </div>
@@ -416,7 +396,7 @@ const visibleMessages =
           }}
         >
 
-          {filteredMessages.length === 0 && (
+          {messages.filter.length === 0 && (
 
             <div className="text-gray-400">
               Upload WhatsApp ZIP File
@@ -543,8 +523,25 @@ const visibleMessages =
                   ) : (
 
                     <p className="break-words whitespace-pre-wrap pr-16">
-                      {message.text}
-                    </p>
+
+  {search &&
+  message.text
+    .toLowerCase()
+    .includes(search.toLowerCase()) ? (
+
+    <span className="bg-yellow-400 text-black px-1 rounded">
+
+      {message.text}
+
+    </span>
+
+  ) : (
+
+    message.text
+
+  )}
+
+</p>
 
                   )}
 
@@ -562,7 +559,7 @@ const visibleMessages =
 
         </div>
 {/* LOAD MORE */}
-{visibleCount < filteredMessages.length && (
+{visibleCount < messages.length && (
 
   <div className="p-4 flex justify-center">
 
