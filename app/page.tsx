@@ -21,9 +21,10 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [loadingText, setLoadingText] = useState("");
 const [showMediaPanel, setShowMediaPanel] =
+  useState(false);
+
 const [fullscreenImage, setFullscreenImage] =
   useState("");
-  useState(false);
   // ZIP Upload
   const handleZipUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
